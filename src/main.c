@@ -5,6 +5,7 @@
  * Created on November 15, 2017, 3:38 PM
  */
 #define _XTAL_FREQ 20000000
+// 2017/12/6
 // CONFIG
 #pragma config FOSC = HS        // Oscillator Selection bits (HS oscillator)
 #pragma config WDTE = OFF       // Watchdog Timer Enable bit (WDT disabled)
