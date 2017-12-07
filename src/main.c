@@ -20,6 +20,7 @@
 //#include <pic16f877a.h>
 
 //unsigned char *buf;
+//this is a test
 unsigned char buf[50];
 unsigned int Reg[32];
 unsigned char len;

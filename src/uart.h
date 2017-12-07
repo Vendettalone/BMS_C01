@@ -1,3 +1,4 @@
+
 char UART_Init(const long int baudrate)
 {
 	unsigned int x;
@@ -32,7 +33,11 @@ char UART_Data_Ready()
 }
 char UART_Read()
 {
-
+  if(OERR) // check for Error 
+    {
+        CREN = 0; //If error -> Reset 
+        CREN = 1; //If error -> Reset 
+    }
   while(!RCIF);
   
   return RCREG;
