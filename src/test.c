@@ -11,20 +11,16 @@
 #pragma config CP = OFF         // Flash Program Memory Code Protection bit (Code protection off)
 
 #include <xc.h>
-#include "uart1.h"
-
+#include "uart.h"
+#include "Init.h"
 void main()
 {
-    TRISD=0xfe;
-    TRISB3=0;
-    RB3=0;
-    RD0=0;
-    UART_Init(9600);
-    while(1)
+    Init_IO();
+    unsigned char reg;  
+    for(unsigned char i=0;i<0xff;i++)
     {
-        RD0=~RD0;
-        UART_Write(0x06);
-       __delay_ms(500);
+        reg=ReadEEPROM(0x00);
+        WriteEEPROM(0x00,i);
     }
-    return;
+    while(1);
 }

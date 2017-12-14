@@ -1,0 +1,30 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+CRC16_1	main.c	/^unsigned int CRC16_1(char *buf,char len)$/;"	f
+CRC16_2	main.c	/^unsigned int CRC16_2(char* pchMsg, char wDataLen)$/;"	f
+ISR	main.c	/^void interrupt ISR()$/;"	f
+Init_IO	Init.c	/^void Init_IO(void)$/;"	f
+Init_timer1_100ms	Init.c	/^void Init_timer1_100ms(void)$/;"	f
+Reg	main.c	/^unsigned int Reg[32];$/;"	v
+UART_Data_Ready	uart.h	/^char UART_Data_Ready()$/;"	f
+UART_Init	uart.h	/^char UART_Init(const long int baudrate)$/;"	f
+UART_Read	uart.h	/^char UART_Read()$/;"	f
+UART_Read_Text	uart.h	/^void UART_Read_Text(char *Output, unsigned int length)$/;"	f
+UART_Read_Text2	uart.h	/^void UART_Read_Text2(char buf[],unsigned int length)$/;"	f
+UART_TX_Empty	uart.h	/^char UART_TX_Empty()$/;"	f
+UART_Write	uart.h	/^void UART_Write(char data)$/;"	f
+UART_Write_Text	uart.h	/^void UART_Write_Text(char *text)$/;"	f
+UartAction	main.c	/^void UartAction(unsigned char buf[], unsigned char len)$/;"	f
+UartWrite	uart.h	/^void UartWrite(unsigned char buf[],unsigned char len)$/;"	f
+UartWrite1	uart.h	/^void UartWrite1(unsigned char *buf, unsigned char len)$/;"	f
+_XTAL_FREQ	main.c	/^#define _XTAL_FREQ /;"	d	file:
+_XTAL_FREQ	test.c	/^#define _XTAL_FREQ /;"	d	file:
+buf	main.c	/^unsigned char buf[50];$/;"	v
+len	main.c	/^unsigned char len;$/;"	v
+main	main.c	/^ void main(void) {$/;"	f
+main	test.c	/^void main()$/;"	f
+wCRCTalbeAbs	main.c	/^const unsigned int wCRCTalbeAbs[] =$/;"	v
