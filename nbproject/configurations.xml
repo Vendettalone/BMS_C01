@@ -6,6 +6,9 @@
                    projectFiles="true">
       <itemPath>src/uart.h</itemPath>
       <itemPath>src/Init.h</itemPath>
+      <itemPath>src/AD.h</itemPath>
+      <itemPath>src/IIC.h</itemPath>
+      <itemPath>src/Status.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -19,6 +22,9 @@
         <itemPath>src/test.c</itemPath>
         <itemPath>src/Init.c</itemPath>
         <itemPath>src/uart.c</itemPath>
+        <itemPath>src/AD.c</itemPath>
+        <itemPath>src/IIC.c</itemPath>
+        <itemPath>src/Status.c</itemPath>
       </logicalFolder>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"

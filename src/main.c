@@ -16,22 +16,38 @@
 #pragma config CP = OFF         // Flash Program Memory Code Protection bit (Code protection off)
 
 #include <xc.h>
+#include "Init.h"
 #include "uart.h"
+#include "IIC.h"
+#include "AD.h"
 //#include <pic16f877a.h>
 
 //unsigned char *buf;
 //this is a test
 unsigned char buf[50];
-unsigned int Reg[32];
+int Reg[32];
 unsigned char len;
 
 
-
  void main(void) {
-    for(char i=1;i<33;i++)
+     
+    Init_IO();
+    for(char i=0;i<7;i++)
     {
-        Reg[i] = i;
+        Reg[i+11]=ReadEEPROM(i);
     }
+    for(char i=7;i<14;i++)
+    {
+        Reg[i+13]=ReadEEPROM(i);
+    }
+    Init_I2C();
+    Sample_Volt();
+    Sample_Volt();
+    Sample_Cur();
+    Sample_Cur();
+    Sample_Temp();
+    Sample_Temp();
+    
     TRISD=0xfe;
     RD0=0;
     TRISB3=0;
