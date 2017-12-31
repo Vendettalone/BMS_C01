@@ -3,6 +3,7 @@
 #include "AD.h"
 unsigned char T_Chel[4]={0b10000000,0b10100000,0b11000000,0b11100000};
 extern int Reg[32];
+extern int Temp[4];
 void write_ext_ads1110(unsigned char address, unsigned char config_data)
  {
     unsigned char k;    // Save ACKSTAT
@@ -107,10 +108,14 @@ void Sample_Temp(void)
 {
     write_ext_m3424(T_Chel[0]);
     Reg[4] = read_ext_m3424(); //0.1?
+    Temp[0] = Reg[4];
     write_ext_m3424(T_Chel[1]);
     Reg[5] = read_ext_m3424();
+    Temp[1] = Reg[5];
     write_ext_m3424(T_Chel[2]);
     Reg[6] = read_ext_m3424();
+    Temp[2] = Reg[6];
     write_ext_m3424(T_Chel[3]);
     Reg[27] = read_ext_m3424();
+    Temp[3] = Reg[7];
 }

@@ -20,18 +20,25 @@
 #include "uart.h"
 #include "IIC.h"
 #include "AD.h"
+#include "control.h"
 //#include <pic16f877a.h>
 
 //unsigned char *buf;
 //this is a test
 unsigned char buf[50];
 int Reg[32];
+int Temp[4]={0,0,0,0};
 unsigned char len;
+unsigned char KJ_Flag=0;
+unsigned char ErrorFlag1=0x00;
+unsigned char ErrorFlag2=0x00;
+void Get_Error(void);
 
 
  void main(void) {
      
     Init_IO();
+    RB5=0;
     for(char i=0;i<7;i++)
     {
         Reg[i+11]=ReadEEPROM(i);
@@ -41,12 +48,16 @@ unsigned char len;
         Reg[i+13]=ReadEEPROM(i);
     }
     Init_I2C();
-    Sample_Volt();
-    Sample_Volt();
-    Sample_Cur();
-    Sample_Cur();
-    Sample_Temp();
-    Sample_Temp();
+    while(!RB5)
+    {
+      Sample_Volt();
+      Sample_Volt();
+      Sample_Cur();
+      Sample_Cur();
+      Sample_Temp();
+      Sample_Temp();
+      Get_Error();
+    }
     
     TRISD=0xfe;
     RD0=0;
@@ -79,5 +90,52 @@ void interrupt ISR()
         RCIE=1;
     }
 }
-
-
+void Get_Error(void)
+{   
+  //voltage error
+  if (Reg[1]>Reg[12])
+  {
+      Relay_Gy(0);
+      ErrorFlag1|=0b00001100;
+  }
+  else if(Reg[1]>Reg[11])
+      ErrorFlag1|=0b00000100;
+  else if(Reg[1]<Reg[21])
+  {
+      Relay_Gy(0);
+      ErrorFlag1|=0b00000011;
+  }
+  else if (Reg[1]<Reg[20])
+      ErrorFlag1|=0b00000001;
+  else
+      ErrorFlag1&=0b11110000;
+  //Temperature error
+  int tmp;
+  for(char i=0;i<3;i++)
+      for(char j=0;j<i;j++)
+      {
+          if(Temp[j]>Temp[j+1])
+          {
+              Temp[j] = tmp;
+              Temp[j] = Temp[j+1];
+              Temp[j+1] = tmp;
+          }
+              
+      }
+  if (Temp[3]>Reg[14])
+  {
+      Relay_Gy(0);
+      ErrorFlag1 |= 0b11000000;
+  }
+  else if (Temp[3]>Reg[13])
+      ErrorFlag1 |= 0b01000000;
+  if (Temp[3]>Reg[16])
+      Relay_Fan(1);
+  else if (Temp[3]<Reg[17])
+      Relay_Fan(0); 
+  //power on
+  if (ErrorFlag1 && 0b10101010)
+      Relay_Gy(0);
+  else
+      Relay_Gy(1);
+}
