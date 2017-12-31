@@ -13,6 +13,6 @@
 void Init_IO(void);
 void Init_IIC(void);
 void Init_UART(void);
-void Init_timer1_100ms(void);
+void Init_Timer1_100ms(void);
 unsigned char ReadEEPROM(unsigned char address);
 void WriteEEPROM(unsigned char address, unsigned char datas);

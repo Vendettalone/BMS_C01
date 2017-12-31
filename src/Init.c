@@ -1,7 +1,7 @@
 #include<xc.h>
 #include "Init.h"
 
-void Init_timer1_100ms(void)
+void Init_Timer1_100ms(void)
 {
    T1CON=0x30;//Ÿ
    TMR1H=0x06;//

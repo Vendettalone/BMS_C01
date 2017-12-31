@@ -58,25 +58,23 @@ void Get_Error(void);
       Sample_Temp();
       Get_Error();
     }
-    
-    TRISD=0xfe;
-    RD0=0;
-    TRISB3=0;
-    RB3=1;
-    UART_Init(9600);
-    RCIF=0;
     GIE=1;
     PEIE=1;
+    Init_Timer1_100ms();
+    TMR1IE=1;
+    
+    UART_Init(9600);
+    RB3=1;
+    RCIF=0;
     RCIE=1;
     while(1)
     {
-        RD0=~RD0;
-       __delay_ms(500);
+        Get_Error();
     }
     return;
 }
 
-void interrupt ISR()
+void interrupt Modbus()
 {
     if(RCIF)
     {
@@ -88,6 +86,17 @@ void interrupt ISR()
         RD0=~RD0;
         RB3=1;
         RCIE=1;
+    }
+}
+void interrupt Sample()
+{
+    if(TMR1IF)
+    {
+        TMR1H=0x06;
+        TMR1IF=0;
+        Sample_Volt();
+        Sample_Cur();
+        Sample_Temp();
     }
 }
 void Get_Error(void)
