@@ -97,12 +97,15 @@ void Sample_Volt(void)
      char address = 0b10010010;
      write_ext_ads1110(address ,0b10010000);	// Set Bits of Cofiguration
      Reg[1]= read_ext_ads1110(address);	// Sampling,unit:1mV
+     Reg[1] = Reg[1]/2.98;
 }
 void  Sample_Cur(void)
 {
      char address = 0b10010000;
      write_ext_ads1110(address ,0b10010000);	// Set Bits of Cofiguration
-     Reg[2] = read_ext_ads1110(address);	// Sampling,unit:1mV            
+     Reg[2] = read_ext_ads1110(address);	// Sampling,unit:1mV
+     if(Reg[2]==0xffff)
+         Reg[2]=0;
 }
 void Sample_Temp(void)
 {

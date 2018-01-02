@@ -49,8 +49,9 @@ void Get_Error(void);
     {
         Reg[i+13]=ReadEEPROM(i);
     }
+   
     Init_I2C();
-    while(!RB5)
+   /* while(!RB5)
     {
       Sample_Volt();
       Sample_Volt();
@@ -60,6 +61,7 @@ void Get_Error(void);
       Sample_Temp();
       Get_Error();
     }
+    */
     GIE=1;
     PEIE=1;
     Init_Timer1_100ms();
@@ -74,7 +76,11 @@ void Get_Error(void);
     while(1)
     {
         if(Timer1_Counter==Timer1_Counter_Set)
+        {
+            Timer1_Counter=0;
             Get_Error();
+        }
+            
     }
     return;
 }
@@ -92,21 +98,19 @@ void interrupt Modbus()
         RB3=1;
         RCIE=1;
     }
-}
-void interrupt Sample()
-{
+    
     if(TMR1IF)
     {
+        TMR2IE=0;
         TMR1H=0x06;
         TMR1IF=0;
         Sample_Volt();
         Sample_Cur();
         Sample_Temp();
         Timer1_Counter++;
+        TMR2IE=1;
     }
-}
-void interrupt Timer2()
-{
+    
     if(TMR2IF)
     {
         if (Timer2_Counter==Timer2_Counter_Set)
@@ -122,6 +126,7 @@ void interrupt Timer2()
         }    
     }
 }
+
 void Get_Error(void)
 {   
   //voltage error

@@ -14,3 +14,4 @@ void UART_Write_text(char *text);
 void UARTWrite(unsigned char buf[],unsigned char len);
 unsigned int CRC16_1(char *buf,char len);
 unsigned int CRC16_2(char* pchMsg, char wDataLen);
+void UartAction(unsigned char buf[], unsigned char len);
