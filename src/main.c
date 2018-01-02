@@ -35,7 +35,7 @@ unsigned char ErrorFlag2=0x00;
 unsigned char Timer2_Counter=0,Timer2_Counter_Set=100;
 unsigned char Timer1_Counter=0,Timer1_Counter_Set=10;
 void Get_Error(void);
-
+void Set_Standard(void);
 
  void main(void) {
      
@@ -49,8 +49,8 @@ void Get_Error(void);
     {
         Reg[i+13]=ReadEEPROM(i);
     }
-   
-    Init_I2C();
+
+     I2C_Master_Init(100000);
    /* while(!RB5)
     {
       Sample_Volt();
@@ -90,6 +90,8 @@ void interrupt Modbus()
     if(RCIF)
     {
         RCIE=0;
+        TMR2IE=0;
+        TMR1IE=0;
         UART_Read_Text(buf,8);
         //UART_Read_Text(buf2,8);
         RB3=0;
@@ -97,6 +99,8 @@ void interrupt Modbus()
         RD0=~RD0;
         RB3=1;
         RCIE=1;
+        TMR1IE=1;
+        TMR2IE=1;
     }
     
     if(TMR1IF)
@@ -175,4 +179,16 @@ void Get_Error(void)
       Relay_Gy(0);
   else
       Relay_Gy(1);
+}
+void Set_Standard()
+{
+  Reg[11]=590;
+  Reg[12]=620;
+  Reg[13]=450;
+  Reg[14]=550;
+  Reg[15]=10000;
+  Reg[16]=370;
+  Reg[17]=350;
+  Reg[20]=480;
+  Reg[21]=400;
 }

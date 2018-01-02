@@ -1,13 +1,19 @@
 /* 
  * File:   IIC.h
- * Author: zql
+ * Author: vincewl
  *
  * Created on December 14, 2017, 4:49 PM
  */
 
-void Init_I2C(void);
-void I2C_Start(void);
-void I2C_RptStart(void);
-void I2C_Stop(void);
-unsigned short I2C_Read( unsigned char ack );
-unsigned char I2C_Write( unsigned char I2CWriteData );
+#ifndef _XTAL_FREQ
+#define	_XTAL_FREQ 20000000
+
+#endif	/* INIT_H */
+
+void I2C_Master_Init(const unsigned long c);
+void I2C_Master_Wait();
+void I2C_Master_Start();
+void I2C_Master_RepeatedStart();
+void I2C_Master_Stop();
+void I2C_Master_Write(unsigned d);
+unsigned short I2C_Master_Read(unsigned short a);

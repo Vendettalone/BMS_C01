@@ -1,70 +1,60 @@
 /* 
  * File:   IIC.h
- * Author: zql
+ * Author: vincewl
  *
  * Created on December 14, 2017, 4:49 PM
  */
 #include <xc.h>
 #include "IIC.h"
 
-void Init_I2C()
+void I2C_Master_Init(const unsigned long c)
 {
-  TRISC3=1;        
-  TRISC4=1;
-
-  SSPCON = 0x28;      
-  SSPCON2 = 0x00;
-  SSPADD = 0x0D;  
-
-  CKE=1;   
-  SMP=1;     
-
-  SSPIF=0;      
-  BCLIF=0;     
+    SSPCON = 0b00101000;
+    SSPCON2 = 0;
+    SSPADD = (_XTAL_FREQ/(4*c))-1;
+    SSPSTAT = 0;
+    TRISC3 = 1;
+    TRISC4 = 1;
 }
 
-void I2C_Start()
+void I2C_Master_Wait()
 {
- SEN=1;  
- while(SEN);  
+    while ((SSPSTAT & 0x04) || (SSPCON2 & 0x1F));
 }
 
-//void I2C_RptStart()   // Repeat Start
-//{
-//  RSEN=1;  
-//  while(RSEN);  
-//}
-
-void I2C_Stop()
+void I2C_Master_Start()
 {
-  PEN=1;  
-  while(PEN); 
+    I2C_Master_Wait();
+    SEN = 1;
 }
 
-unsigned short I2C_Read(unsigned char ack)
+void I2C_Master_RepeatedStart()
 {
- unsigned char I2CReadData;
-
- RCEN=1;  
- while(RCEN);  
-
- I2CReadData = SSPBUF; 
- if ( ack )
- {
-  ACKDT=0;
- }
- else
- {
-  ACKDT=1;
- }
- ACKEN=1;           
- while(ACKEN);  
- return( I2CReadData );
+    I2C_Master_Wait();
+    RSEN = 1;
 }
 
-unsigned char I2C_Write( unsigned char I2CWriteData )
+void I2C_Master_Stop()
 {
- SSPBUF = I2CWriteData;
- while(SSPSTAT & 0b00000100);  
- return ( !ACKSTAT  ); 
+    I2C_Master_Wait();
+    PEN = 1;
+}
+
+void I2C_Master_Write(unsigned d)
+{
+    I2C_Master_Wait();
+    SSPBUF = d;
+}
+
+unsigned short I2C_Master_Read(unsigned short a)
+{
+    unsigned short temp;
+    I2C_Master_Wait();
+    RCEN = 1;
+    I2C_Master_Wait();
+    temp = SSPBUF;
+    I2C_Master_Wait();
+    ACKDT = (a)?0:1;
+    ACKEN = 1;
+    return temp;
 }
