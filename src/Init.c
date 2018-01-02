@@ -6,6 +6,7 @@ void Init_Timer1_100ms(void)
    T1CON=0x30;//Ÿ
    TMR1H=0x06;//
    TMR1L=0x00;
+   TMR1IF=0;
 }
 void Init_IO(void)
 {
@@ -42,4 +43,10 @@ void WriteEEPROM(unsigned char address, unsigned char datas)
     //asm nop; //do nothing
   }
     EEIF = 0; //Clearing EEIF bit
+}
+void Init_Timer2_10ms(void)
+{
+    T2CON=0x7F;
+    PR2=195;
+    TMR2IF=0;
 }

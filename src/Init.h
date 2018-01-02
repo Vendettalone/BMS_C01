@@ -16,3 +16,4 @@ void Init_UART(void);
 void Init_Timer1_100ms(void);
 unsigned char ReadEEPROM(unsigned char address);
 void WriteEEPROM(unsigned char address, unsigned char datas);
+void Init_Timer2_10ms(void);

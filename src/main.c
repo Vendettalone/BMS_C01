@@ -32,6 +32,8 @@ unsigned char len;
 unsigned char KJ_Flag=0;
 unsigned char ErrorFlag1=0x00;
 unsigned char ErrorFlag2=0x00;
+unsigned char Timer2_Counter=0,Timer2_Counter_Set=100;
+unsigned char Timer1_Counter=0,Timer1_Counter_Set=10;
 void Get_Error(void);
 
 
@@ -62,6 +64,8 @@ void Get_Error(void);
     PEIE=1;
     Init_Timer1_100ms();
     TMR1IE=1;
+    Init_Timer2_10ms();
+    TMR2IE=1;
     
     UART_Init(9600);
     RB3=1;
@@ -69,7 +73,8 @@ void Get_Error(void);
     RCIE=1;
     while(1)
     {
-        Get_Error();
+        if(Timer1_Counter==Timer1_Counter_Set)
+            Get_Error();
     }
     return;
 }
@@ -97,6 +102,24 @@ void interrupt Sample()
         Sample_Volt();
         Sample_Cur();
         Sample_Temp();
+        Timer1_Counter++;
+    }
+}
+void interrupt Timer2()
+{
+    if(TMR2IF)
+    {
+        if (Timer2_Counter==Timer2_Counter_Set)
+        {
+            TMR2IF=0;
+            RD0=~RD0;
+            Timer2_Counter=0;
+        }
+        else
+        {
+            TMR2IF=0;
+            Timer2_Counter++;
+        }    
     }
 }
 void Get_Error(void)
