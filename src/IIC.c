@@ -19,7 +19,7 @@ void I2C_Master_Init(const unsigned long c)
 
 void I2C_Master_Wait()
 {
-    while ((SSPSTAT & 0x04) || (SSPCON2 & 0x1F));
+    while ((SSPSTAT & 0x04) || (SSPCON2 & 0x17));
 }
 
 void I2C_Master_Start()
@@ -38,6 +38,7 @@ void I2C_Master_Stop()
 {
     I2C_Master_Wait();
     PEN = 1;
+    I2C_Master_Wait();
 }
 
 void I2C_Master_Write(unsigned d)

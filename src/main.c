@@ -36,6 +36,7 @@ unsigned char Timer2_Counter=0,Timer2_Counter_Set=100;
 unsigned char Timer1_Counter=0,Timer1_Counter_Set=10;
 void Get_Error(void);
 void Set_Standard(void);
+void Init_I2C(void);
 
  void main(void) {
      
@@ -50,18 +51,22 @@ void Set_Standard(void);
         Reg[i+13]=ReadEEPROM(i);
     }
 
-     I2C_Master_Init(100000);
+
    /* while(!RB5)
     {
-      Sample_Volt();
-      Sample_Volt();
-      Sample_Cur();
-      Sample_Cur();
-      Sample_Temp();
-      Sample_Temp();
-      Get_Error();
+     
+     I2C_Master_Init(10000);
+     //Init_I2C();
+     Sample_Volt();
+     // Sample_Volt();
+     // Sample_Cur();
+     // Sample_Cur();
+     // Sample_Temp();
+     // Sample_Temp();
+     // Get_Error();
     }
     */
+    I2C_Master_Init(10000);
     GIE=1;
     PEIE=1;
     Init_Timer1_100ms();
@@ -191,4 +196,19 @@ void Set_Standard()
   Reg[17]=350;
   Reg[20]=480;
   Reg[21]=400;
+}
+void Init_I2C()
+{
+  TRISC3=1;        
+  TRISC4=1;
+
+  SSPCON = 0x28;      
+  SSPCON2 = 0x00;
+  SSPADD = 0x0D;  
+
+  CKE=1;   
+  SMP=1;     
+
+  SSPIF=0;      
+  BCLIF=0;     
 }

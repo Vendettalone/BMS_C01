@@ -9,6 +9,7 @@
       <itemPath>src/AD.h</itemPath>
       <itemPath>src/IIC.h</itemPath>
       <itemPath>src/control.h</itemPath>
+      <itemPath>src/I2C.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -25,6 +26,7 @@
         <itemPath>src/AD.c</itemPath>
         <itemPath>src/IIC.c</itemPath>
         <itemPath>src/control.c</itemPath>
+        <itemPath>src/I2C.c</itemPath>
       </logicalFolder>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
@@ -35,6 +37,7 @@
   </logicalFolder>
   <sourceRootList>
     <Elem>src</Elem>
+    <Elem>../../Downloads/i2c Library &amp; 16F877A</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -560,7 +563,15 @@
         <property key="stack-size-main" value="auto"/>
         <property key="stack-type" value="compiled"/>
       </XC8-config-global>
-      <item path="src/test.c" ex="true" overriding="false">
+      <item path="src/main.c" ex="true" overriding="false">
+        <HI-TECH-COMP>
+        </HI-TECH-COMP>
+        <HI-TECH-LINK>
+        </HI-TECH-LINK>
+        <XC8-config-global>
+        </XC8-config-global>
+      </item>
+      <item path="src/test.c" ex="false" overriding="false">
         <HI-TECH-COMP>
         </HI-TECH-COMP>
         <HI-TECH-LINK>
