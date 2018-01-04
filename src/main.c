@@ -18,7 +18,7 @@
 #include <xc.h>
 #include "Init.h"
 #include "uart.h"
-#include "IIC.h"
+#include "I2C.h"
 #include "AD.h"
 #include "control.h"
 //#include <pic16f877a.h>
@@ -28,11 +28,12 @@
 unsigned char buf[50];
 int Reg[32];
 int Temp[4]={0,0,0,0};
+char ch=0;
 unsigned char len;
 unsigned char KJ_Flag=0;
 unsigned char ErrorFlag1=0x00;
 unsigned char ErrorFlag2=0x00;
-unsigned char Timer2_Counter=0,Timer2_Counter_Set=100;
+unsigned char Timer2_Counter=0,Timer2_Counter_Set=50;
 unsigned char Timer1_Counter=0,Timer1_Counter_Set=10;
 void Get_Error(void);
 void Set_Standard(void);
@@ -66,11 +67,12 @@ void Init_I2C(void);
      // Get_Error();
     }
     */
-    I2C_Master_Init(10000);
+    I2CInit(10000);
+    Set_ADS1110();
     GIE=1;
     PEIE=1;
-    Init_Timer1_100ms();
-    TMR1IE=1;
+    //Init_Timer1_100ms();
+    //TMR1IE=1;
     Init_Timer2_10ms();
     TMR2IE=1;
     
@@ -80,10 +82,11 @@ void Init_I2C(void);
     RCIE=1;
     while(1)
     {
-        if(Timer1_Counter==Timer1_Counter_Set)
+        if(Timer2_Counter==Timer2_Counter_Set)
         {
-            Timer1_Counter=0;
-            Get_Error();
+            Timer2_Counter=0;
+            RD0=~RD0;
+           // Get_Error();
         }
             
     }
@@ -101,7 +104,6 @@ void interrupt Modbus()
         //UART_Read_Text(buf2,8);
         RB3=0;
         UartAction(buf,8);
-        RD0=~RD0;
         RB3=1;
         RCIE=1;
         TMR1IE=1;
@@ -113,26 +115,27 @@ void interrupt Modbus()
         TMR2IE=0;
         TMR1H=0x06;
         TMR1IF=0;
-        Sample_Volt();
-        Sample_Cur();
-        Sample_Temp();
         Timer1_Counter++;
         TMR2IE=1;
     }
     
     if(TMR2IF)
     {
-        if (Timer2_Counter==Timer2_Counter_Set)
+        TMR2IF=0;
+        Read_ADS1110();
+        Read_MCP3424(ch);
+        if(ch==3)
         {
-            TMR2IF=0;
-            RD0=~RD0;
-            Timer2_Counter=0;
+            ch=0;
+            Set_MCP3424(ch);
         }
         else
         {
-            TMR2IF=0;
-            Timer2_Counter++;
-        }    
+            ch++;
+            Set_MCP3424(ch);
+        }
+        Timer2_Counter++;
+      
     }
 }
 

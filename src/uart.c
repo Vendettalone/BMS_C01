@@ -127,8 +127,9 @@ void UartAction(unsigned char buf[], unsigned char len)
 				len = 3; //Frame head byte length.
                 while (cnt--)
                 {
-                    buf[len++] = 0x00; //register high byte.
-                    buf[len++] = Reg[i++]; //register low byte.
+                    buf[len++] = Reg[i]>>8; //register high byte.
+                    buf[len++] = Reg[i]; //register low byte.
+                    i++;
                 }
                 break;
             }		

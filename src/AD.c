@@ -36,7 +36,6 @@ void Sample_Cur(void)
         Reg[2] = I2CRead();
         I2CAck();
         Reg[2]<<=8;
-        //Reg[1]&=0x8fff;
         Reg[2]=Reg[2]+I2CRead(); //1mv
         I2CNak();
         I2CStop();
@@ -62,4 +61,56 @@ void Sample_Temp(void)
         Temp[i]=Reg[4+i];
         __delay_ms(1);
     }
+}
+void Set_ADS1110(void)
+{
+    I2CStart();
+    I2CSend(0b10010010);//ED1
+    I2CSend(0b10000000);
+    I2CStop();
+    I2CStart();
+    I2CSend(0b10010000);//ED0
+    I2CSend(0b10000000);
+    I2CStop();
+}
+void Read_ADS1110(void)
+{
+    I2CStart();
+    I2CSend(0b10010011);
+    Reg[1] = I2CRead();
+    I2CAck();
+    Reg[1]<<=8;
+    //Reg[1]&=0x8fff;
+    Reg[1]=Reg[1]+I2CRead(); //1mv
+    I2CNak();
+    I2CStop();
+    
+    I2CStart();
+    I2CSend(0b10010001);
+    Reg[2] = I2CRead();
+    I2CAck();
+    Reg[2]<<=8;
+    Reg[2]=Reg[2]+I2CRead(); //1mv
+    I2CNak();
+    I2CStop();
+}
+
+void Set_MCP3424(char ch)
+{
+     I2CStart();
+     I2CSend(0b11010000);
+     I2CSend(T_Chel[ch]);
+     I2CStop();
+}
+void Read_MCP3424(char ch)
+{
+    I2CStart();
+    I2CSend(0b11010001);
+    Reg[4+ch]=I2CRead();
+    I2CAck();
+    Reg[4+ch]<<=8;
+    Reg[4+ch]=Reg[4+ch]+I2CRead();
+    I2CNak();
+    I2CStop();
+    Temp[ch]=Reg[4+ch];
 }
