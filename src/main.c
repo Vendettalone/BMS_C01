@@ -95,21 +95,6 @@ void Init_I2C(void);
 
 void interrupt Modbus()
 {
-    if(RCIF)
-    {
-        RCIE=0;
-        TMR2IE=0;
-        TMR1IE=0;
-        UART_Read_Text(buf,8);
-        //UART_Read_Text(buf2,8);
-        RB3=0;
-        UartAction(buf,8);
-        RB3=1;
-        RCIE=1;
-        TMR1IE=1;
-        TMR2IE=1;
-    }
-    
     if(TMR1IF)
     {
         TMR2IE=0;
@@ -122,6 +107,7 @@ void interrupt Modbus()
     if(TMR2IF)
     {
         TMR2IF=0;
+       // RCIE=0;
         Read_ADS1110();
         Read_MCP3424(ch);
         if(ch==3)
@@ -135,8 +121,20 @@ void interrupt Modbus()
             Set_MCP3424(ch);
         }
         Timer2_Counter++;
+        //RCIE=1;
       
     }
+    if(RCIF)
+    {
+        RCIE=0;
+        UART_Read_Text(buf,8);
+        //UART_Read_Text(buf2,8);
+        RB3=0;
+        UartAction(buf,8);
+        RB3=1;
+        RCIE=1;
+    }
+    
 }
 
 void Get_Error(void)

@@ -3,7 +3,7 @@
 
 void Init_Timer1_100ms(void)
 {
-   T1CON=0x31;//Ÿ
+   T1CON=0x31;//
    TMR1H=0x06;//
    TMR1L=0x00;
    TMR1IF=0;

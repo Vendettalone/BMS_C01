@@ -39,7 +39,10 @@ void Get_Error(void);
 
 
  void main(void) {
-     
+    
+    int i=1000,j=1000;
+    i =i/3.5;
+    j =j*10/35;
     //Init_IO();
     I2CInit(100000);
     while(1)
