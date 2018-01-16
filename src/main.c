@@ -38,12 +38,10 @@ unsigned char Timer1_Counter=0,Timer1_Counter_Set=10;
 void Get_Error(void);
 void Set_Standard(void);
 void Init_I2C(void);
-
- void main(void) {
-     
+void main(void) {
     Init_IO();
     RB5=0;
-    for(char i=0;i<7;i++)
+    for(char i=0;i<7;i++)     //控制阈值读取
     {
         Reg[i+11]=ReadEEPROM(i);
     }
@@ -53,13 +51,13 @@ void Init_I2C(void);
     }
 
 
-   /* while(!RB5)
+   /* while(!RB5)   //开机自检
     {
      
      I2C_Master_Init(10000);
      //Init_I2C();
      Sample_Volt();
-     // Sample_Volt();
+     //Sample_Volt();
      // Sample_Cur();
      // Sample_Cur();
      // Sample_Temp();
@@ -67,45 +65,62 @@ void Init_I2C(void);
      // Get_Error();
     }
     */
-    I2CInit(10000);
+    I2CInit(100000);
     Set_ADS1110();
     GIE=1;
     PEIE=1;
-    //Init_Timer1_100ms();
-    //TMR1IE=1;
-    Init_Timer2_10ms();
-    TMR2IE=1;
+    Init_Timer1_100ms();
+    TMR1IE=1;
+    //Init_Timer2_10ms();
+    //TMR2IE=1;
     
-    UART_Init(9600);
+    UART_Init(9600);   
     RB3=1;
     RCIF=0;
     RCIE=1;
     while(1)
     {
-        if(Timer2_Counter==Timer2_Counter_Set)
+        if(Timer1_Counter==Timer1_Counter_Set)
         {
-            Timer2_Counter=0;
+            RB3=0;
+            Timer1_Counter=0;
             RD0=~RD0;
-           // Get_Error();
+           // HMI_Send();  //HMI测试
+          //  HMI_New();   //HMI测试
+           // Get_Error(); //错误处理
         }
             
     }
     return;
 }
 
-void interrupt Modbus()
+void interrupt ISR()
 {
-    if(TMR1IF)
+    if(TMR1IF)  
     {
+        RCIE=0;
         TMR2IE=0;
         TMR1H=0x06;
         TMR1IF=0;
+        Read_ADS1110();
+        Read_MCP3424(ch);
+        if(ch==3)
+        {
+            ch=0;
+            Set_MCP3424(ch);
+        }
+        else
+        {
+            ch++;
+            Set_MCP3424(ch);
+        }     
         Timer1_Counter++;
         TMR2IE=1;
+        RCIE=1;
     }
     
-    if(TMR2IF)
-    {
+    if(TMR2IF)   //10ms采样策略 ADS1110连续采样，每10ms采样一次；
+    {           //MCP3424单次采样，每10ms转换并采集一次
         TMR2IF=0;
        // RCIE=0;
         Read_ADS1110();
@@ -128,11 +143,13 @@ void interrupt Modbus()
     {
         RCIE=0;
         UART_Read_Text(buf,8);
+        //CREN=0;
         //UART_Read_Text(buf2,8);
         RB3=0;
         UartAction(buf,8);
         RB3=1;
         RCIE=1;
+       // CREN=1;
     }
     
 }

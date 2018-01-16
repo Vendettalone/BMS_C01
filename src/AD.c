@@ -84,7 +84,7 @@ void Read_ADS1110(void)
     Reg[1]=Reg[1]+I2CRead(); //1mv
     I2CNak();
     I2CStop();
-    Reg[1]=Reg[1]/2.52; //实际电压，单位0.1V。by 电阻分压
+    Reg[1]=Reg[1]/2.52; //实际电压，单位0.1V。计算by 电阻分压
     
     I2CStart();
     I2CSend(0b10010001);
@@ -94,7 +94,7 @@ void Read_ADS1110(void)
     Reg[2]=Reg[2]+I2CRead(); //1mv
     I2CNak();
     I2CStop();
-    Reg[2]=Reg[2]/3.95; //实际电流，单位0.1A。by AD602增益只与RG相关，OP07仅做电压跟随器.
+    Reg[2]=Reg[2]/3.95; //实际电流，单位0.1A。计算by AD602增益只与RG相关，OP07仅做电压跟随器.
 }
 
 void Set_MCP3424(char ch)
@@ -108,7 +108,7 @@ void Read_MCP3424(char ch)
 {
     I2CStart();
     I2CSend(0b11010001);
-    Reg[4+ch]=I2CRead();
+    Reg[4+ch]=I2CRead();  //10mV/℃，AD值正好与0.1℃单位温度值相同
     I2CAck();
     Reg[4+ch]<<=8;
     Reg[4+ch]=Reg[4+ch]+I2CRead();

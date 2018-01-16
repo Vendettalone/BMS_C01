@@ -16,6 +16,7 @@
 #pragma config CP = OFF         // Flash Program Memory Code Protection bit (Code protection off)
 
 #include <xc.h>
+#include <string.h>
 #include "Init.h"
 #include "uart.h"
 #include "IIC.h"
@@ -36,15 +37,16 @@ unsigned char ErrorFlag2=0x00;
 unsigned char Timer2_Counter=0,Timer2_Counter_Set=100;
 unsigned char Timer1_Counter=0,Timer1_Counter_Set=10;
 void Get_Error(void);
-
+char *buf2="fuck you\n";
 
  void main(void) {
-    
+    buf[1]='f';
+    buf[2]='u';
     int i=1000,j=1000;
     i =i/3.5;
     j =j*10/35;
     //Init_IO();
-    I2CInit(100000);
+    //I2CInit(100000);
     while(1)
     {
         /*
@@ -69,10 +71,10 @@ void Get_Error(void);
         */
         TRISD0=0;
         RD0=~RD0;
-        Sample_Volt();
-        Sample_Cur();
+       // Sample_Volt();
+       // Sample_Cur();
         __delay_ms(500);
-        Sample_Temp();    
+        //Sample_Temp();    
     }
     return;
 }

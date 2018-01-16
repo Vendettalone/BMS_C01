@@ -97,6 +97,11 @@ void UartWrite(unsigned char buf[],unsigned char len)
     for(char i=0;i<len;i++)
         UART_Write(buf[i]);
 }
+void UartWrite2(unsigned char buf[],unsigned char s,unsigned char len)
+{
+    for(char i=0;i<len;i++)
+        UART_Write(buf[i+s]);
+}
 
 void UartAction(unsigned char buf[], unsigned char len)
 {
@@ -109,7 +114,7 @@ void UartAction(unsigned char buf[], unsigned char len)
 	{ 
 		return; 
 	}
-	crc = CRC16_2(&buf[0], len-2); //CRC check.
+    crc = CRC16_2(&buf[0], len-2); //CRC check.
 	crch = crc >> 8;
 	crcl = crc & 0xFF;
 	if ((buf[len-2]!=crcl) || (buf[len-1]!=crch))
@@ -161,8 +166,51 @@ void UartAction(unsigned char buf[], unsigned char len)
 			len = 3;
 			break;
 	}
-	crc = CRC16_2(&buf[0], len); //Get crc cdoe 
+    crc = CRC16_2(&buf[0], len); //Get crc cdoe 
 	buf[len++] = crc; //set crc low byte
 	buf[len++] = crc >>8; //set crc high byte
 	UartWrite(buf, len+1); //send
+    
+}
+void HMI_Send(void)
+{
+    buf[0]='v';
+    buf[1]='a';
+    buf[2]='1';
+    buf[3]='.';
+    buf[4]='v';
+    buf[5]='a';
+    buf[6]='l';
+    buf[7]='=';
+    buf[8]='0';
+    buf[9]='x';
+    buf[10]=Reg[1]<<8;
+    buf[11]=Reg[1];
+    buf[12]=0xFF;
+    buf[13]=0xFF;
+    buf[14]=0xFF; 
+    buf[15]='\0';
+    UartWrite2(buf,0,15);
+    
+}
+void HMI_New(void)
+{
+    buf[20]='c';
+    buf[21]='l';
+    buf[22]='i';
+    buf[23]='c';
+    buf[24]='k';
+    buf[25]=' ';
+    buf[26]='p';
+    buf[27]='a';
+    buf[28]='g';
+    buf[29]='e';
+    buf[30]='0';
+    buf[31]=',';
+    buf[32]='0';
+    buf[33]=0xff;
+    buf[34]=0xff;
+    buf[35]=0xff;
+    buf[36]='\0';
+    UartWrite2(buf,20,16);
 }
