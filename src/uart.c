@@ -214,3 +214,18 @@ void HMI_New(void)
     buf[36]='\0';
     UartWrite2(buf,20,16);
 }
+void UART_SEND_PC(void)
+{
+    buf[0]=0x1;
+    char i=1,cnt=7,len=1;
+    while (cnt--)
+    {
+      buf[len++] = Reg[i]>>8; //register high byte.
+      buf[len++] = Reg[i]; //register low byte.
+      i++;
+    }
+    buf[len++]=0xff;
+    buf[len++]=0xff;
+    UartWrite(buf,len);
+    
+}

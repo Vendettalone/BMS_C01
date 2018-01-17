@@ -13,7 +13,7 @@ void Sample_Volt(void)
         I2CStop();
         __delay_ms(5);
         I2CStart();
-        I2CSend(0b10010000);
+        I2CSend(0b10010001);
         Reg[1] = I2CRead();
         I2CAck();
         Reg[1]<<=8;

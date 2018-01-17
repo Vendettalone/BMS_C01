@@ -18,3 +18,4 @@ unsigned int CRC16_2(char* pchMsg, char wDataLen);
 void UartAction(unsigned char buf[], unsigned char len);
 void HMI_Send(void);
 void HMI_New(void);
+void UART_SEND_PC(void);

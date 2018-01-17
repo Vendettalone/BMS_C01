@@ -69,29 +69,33 @@ void main(void) {
     Set_ADS1110();
     GIE=1;
     PEIE=1;
-    Init_Timer1_100ms();
-    TMR1IE=1;
-    //Init_Timer2_10ms();
-    //TMR2IE=1;
+    //Init_Timer1_100ms();
+    //TMR1IE=1;
+    Init_Timer2_10ms();
+    TMR2IE=1;
     
-    UART_Init(9600);   
+    UART_Init(19200);   
     RB3=1;
     RCIF=0;
     RCIE=1;
+    RB3=0;
     while(1)
     {
-        if(Timer1_Counter==Timer1_Counter_Set)
+        if(Timer2_Counter==Timer2_Counter_Set)
         {
-            RB3=0;
-            Timer1_Counter=0;
+            Timer2_Counter=0;
             RD0=~RD0;
            // HMI_Send();  //HMI测试
           //  HMI_New();   //HMI测试
            // Get_Error(); //错误处理
         }
+       // if(Timer2_Counter%5==0)
+        //{
+        //   UART_SEND_PC();
+        //}
             
     }
-    return;
+    return;                                                                                                                                                                                                                                                                                   
 }
 
 void interrupt ISR()
@@ -117,6 +121,7 @@ void interrupt ISR()
         Timer1_Counter++;
         TMR2IE=1;
         RCIE=1;
+        RB3=1;
     }
     
     if(TMR2IF)   //10ms采样策略 ADS1110连续采样，每10ms采样一次；
@@ -136,8 +141,8 @@ void interrupt ISR()
             Set_MCP3424(ch);
         }
         Timer2_Counter++;
+        //UART_SEND_PC();     
         //RCIE=1;
-      
     }
     if(RCIF)
     {
