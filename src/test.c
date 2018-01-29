@@ -15,6 +15,8 @@
 #pragma config WRT = OFF        // Flash Program Memory Write Enable bits (Write protection off; all program memory may be written to by EECON control)
 #pragma config CP = OFF         // Flash Program Memory Code Protection bit (Code protection off)
 
+ /*
+  * 
 #include <xc.h>
 #include <string.h>
 #include "Init.h"
@@ -37,9 +39,11 @@ unsigned char ErrorFlag2=0x00;
 unsigned char Timer2_Counter=0,Timer2_Counter_Set=100;
 unsigned char Timer1_Counter=0,Timer1_Counter_Set=10;
 void Get_Error(void);
-char *buf2="fuck you\n";
+
 
  void main(void) {
+     char string[]="hello world\n";
+     string[2]='x';
     buf[1]='f';
     buf[2]='u';
     int i=1000,j=1000;
@@ -68,7 +72,6 @@ char *buf2="fuck you\n";
         Reg[1]<<=8;
         Reg[1]=Reg[1]+buf[2];
         //Reg[1]=Reg[1]/29.8; //100mV
-        */
         TRISD0=0;
         RD0=~RD0;
        // Sample_Volt();
@@ -77,4 +80,24 @@ char *buf2="fuck you\n";
         //Sample_Temp();    
     }
     return;
+}
+/*****测试@0128************
+  * EEPROM初始设置正确性
+  * 使用MPLAB EEPROM编辑window设置值，在模拟器里进行读取和修改
+  * ************/
+#include <xc.h>
+#include "Init.h"
+#include "soc.h"
+int Reg[32];
+char soc;
+float Quantity1;
+const float  Quantity0=150696;
+void main(void)
+{
+  char soc1=0;
+   soc=50;
+   Quantity1=soc*Quantity0/100;
+   Reg[3]=1047;
+   Get_soc();
+   soc1=ReadEEPROM(0x0f);
 }

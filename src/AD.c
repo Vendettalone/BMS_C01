@@ -19,6 +19,7 @@ void Sample_Volt(void)
         Reg[1]<<=8;
         //Reg[1]&=0x8fff;
         Reg[1]=Reg[1]+I2CRead(); //1mv
+        Reg[1]=Reg[1]/2.52;
         I2CNak();
         I2CStop();
         __delay_ms(1);
@@ -40,6 +41,7 @@ void Sample_Cur(void)
         I2CNak();
         I2CStop();
         __delay_ms(1);
+        Reg[2]=Reg[2]/4.095;
 }
 void Sample_Temp(void)
 {
@@ -52,13 +54,13 @@ void Sample_Temp(void)
         __delay_ms(5);
         I2CStart();
         I2CSend(0b11010001);
-        Reg[4+i]=I2CRead();
+        Temp[i]=I2CRead();
         I2CAck();
-        Reg[4+i]<<=8;
-        Reg[4+i]=Reg[4+i]+I2CRead();
+        Temp[i]<<=8;
+        Temp[i]+=I2CRead();
         I2CNak();
         I2CStop();
-        Temp[i]=Reg[4+i];
+        //Temp[i]=Reg[4+i];
         __delay_ms(1);
     }
 }
@@ -94,7 +96,7 @@ void Read_ADS1110(void)
     Reg[2]=Reg[2]+I2CRead(); //1mv
     I2CNak();
     I2CStop();
-    Reg[2]=Reg[2]/3.95; //实际电流，单位0.1A。计算by AD602增益只与RG相关，OP07仅做电压跟随器.
+    //Reg[2]=Reg[2]/3.95; //实际电流，单位0.1A。计算by AD602增益只与RG相关，OP07仅做电压跟随器.
 }
 
 void Set_MCP3424(char ch)

@@ -21,12 +21,16 @@
 #include "I2C.h"
 #include "AD.h"
 #include "control.h"
+#include "soc.h"
 //#include <pic16f877a.h>
 
 //unsigned char *buf;
 //this is a test
 unsigned char buf[50];
 int Reg[32];
+const float Quantity0=150696;
+float Quantity1=0;
+char soc;
 int Temp[4]={0,0,0,0};
 char ch=0;
 unsigned char len;
@@ -38,25 +42,27 @@ unsigned char Timer1_Counter=0,Timer1_Counter_Set=10;
 void Get_Error(void);
 void Set_Standard(void);
 void Init_I2C(void);
+char string[]="hello world\n";
 void main(void) {
     Init_IO();
     RB5=0;
-    for(char i=0;i<7;i++)     //控制阈值读取
+    Reg[2]=ReadEEPROM(0x10);
+    for(char i=1;i<8;i++)     //控制阈值读取
     {
-        Reg[i+11]=ReadEEPROM(i);
+        Reg[i+10]=ReadEEPROM(2*i-1)<<8;
+        Reg[i+10]+=ReadEEPROM(2*i);
     }
-    for(char i=7;i<14;i++)
+    for(char i=8;i<14;i++)
     {
-        Reg[i+13]=ReadEEPROM(i);
+        Reg[i+12]=ReadEEPROM(2*i-1)<<8;
+        Reg[i+12]+=ReadEEPROM(2*i);
     }
-
-
-   /* while(!RB5)   //开机自检
+    I2CInit(100000);
+    Set_ADS1110();
+    while(!RB5)   //开机自检
     {
-     
-     I2C_Master_Init(10000);
-     //Init_I2C();
      Sample_Volt();
+     Sample_Cur();
      //Sample_Volt();
      // Sample_Cur();
      // Sample_Cur();
@@ -64,9 +70,7 @@ void main(void) {
      // Sample_Temp();
      // Get_Error();
     }
-    */
-    I2CInit(100000);
-    Set_ADS1110();
+
     GIE=1;
     PEIE=1;
     //Init_Timer1_100ms();
@@ -141,6 +145,8 @@ void interrupt ISR()
             Set_MCP3424(ch);
         }
         Timer2_Counter++;
+        Get_soc();
+        Reg[2]=Reg[2]/4.095;
         //UART_SEND_PC();     
         //RCIE=1;
     }
@@ -207,6 +213,9 @@ void Get_Error(void)
       Relay_Gy(0);
   else
       Relay_Gy(1);
+  //charge control
+  if (Reg[2]>204)//current > 5A
+    Relay(1);
 }
 void Set_Standard()
 {
