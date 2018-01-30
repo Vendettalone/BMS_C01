@@ -46,7 +46,7 @@ char string[]="hello world\n";
 void main(void) {
     Init_IO();
     RB5=0;
-    Reg[2]=ReadEEPROM(0x10);
+    Reg[2]=ReadEEPROM(0x30);
     for(char i=1;i<8;i++)     //控制阈值读取
     {
         Reg[i+10]=ReadEEPROM(2*i-1)<<8;
