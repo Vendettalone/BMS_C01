@@ -17,155 +17,231 @@
 #pragma config CP = OFF         // Flash Program Memory Code Protection bit (Code protection off)
 
 #include <xc.h>
+#include "Init.h"
 #include "uart.h"
+#include "I2C.h"
+#include "AD.h"
+#include "control.h"
+#include "soc.h"
 //#include <pic16f877a.h>
 
 //unsigned char *buf;
+//this is a test
 unsigned char buf[50];
-unsigned int Reg[32];
+int Reg[32];
+const float Quantity0=150696;
+float Quantity1=0;
+char soc;
+int Temp[4]={0,0,0,0};
+char ch=0;
 unsigned char len;
-void UartAction(unsigned char *buf, unsigned char len);
-unsigned int GetCRC16(unsigned char *ptr,  unsigned char len);
-const unsigned int wCRCTalbeAbs[] =
-{
-0x0000, 0xCC01, 0xD801, 0x1400, 0xF001, 0x3C00, 0x2800, 0xE401, 0xA001, 0x6C00, 0x7800, 0xB401, 0x5000, 0x9C01, 0x8801, 0x4400, 
-};
-unsigned int CRC16_1(char *buf,char len)
-{
-    unsigned int CRC16=0xFFFF;
-    char chChar;
-    for(char i=0;i<len;i++)
+unsigned char KJ_Flag=0;
+unsigned char ErrorFlag1=0x00;
+unsigned char ErrorFlag2=0x00;
+unsigned char Timer2_Counter=0,Timer2_Counter_Set=50;
+unsigned char Timer1_Counter=0,Timer1_Counter_Set=10;
+void Get_Error(void);
+void Set_Standard(void);
+void Init_I2C(void);
+char string[]="hello world\n";
+void main(void) {
+    Init_IO();
+    RB5=0;
+    Reg[2]=ReadEEPROM(0x30);
+    for(char i=1;i<8;i++)     //控制阈值读取
     {
-        chChar=*buf++;
-        CRC16^=chChar;
-        for(char j=0;j<8;j++)
-        {
-            if(CRC16&0x0001)
-            {
-                CRC16=CRC16>>1;
-                CRC16^=0xA001;
-            }
-            else
-                CRC16=CRC16>>1;
-        }
+        Reg[i+10]=ReadEEPROM(2*i-1)<<8;
+        Reg[i+10]+=ReadEEPROM(2*i);
     }
-    return CRC16;
-}
-unsigned int CRC16_2(char* pchMsg, char wDataLen)
-{
-        unsigned int wCRC = 0xFFFF;
-        char i;
-        char chChar;
-        for (i = 0; i < wDataLen; i++)
-        {
-                chChar = *pchMsg++;
-                wCRC = wCRCTalbeAbs[(chChar ^ wCRC) & 15] ^ (wCRC >> 4);
-                wCRC = wCRCTalbeAbs[((chChar >> 4) ^ wCRC) & 15] ^ (wCRC >> 4);
-        }
+    for(char i=8;i<14;i++)
+    {
+        Reg[i+12]=ReadEEPROM(2*i-1)<<8;
+        Reg[i+12]+=ReadEEPROM(2*i);
+    }
+    I2CInit(100000);
+    Set_ADS1110();
+    while(!RB5)   //开机自检
+    {
+     Sample_Volt();
+     Sample_Cur();
+     //Sample_Volt();
+     // Sample_Cur();
+     // Sample_Cur();
+     // Sample_Temp();
+     // Sample_Temp();
+     // Get_Error();
+    }
 
-        return wCRC;
-}
- void main(void) {
-    for(char i=1;i<33;i++)
-    {
-        Reg[i] = i;
-    }
-    TRISD=0xfe;
-    RD0=0;
-    TRISB3=0;
-    RB3=1;
-    UART_Init(9600);
-    RCIF=0;
     GIE=1;
     PEIE=1;
+    //Init_Timer1_100ms();
+    //TMR1IE=1;
+    Init_Timer2_10ms();
+    TMR2IE=1;
+    
+    UART_Init(19200);   
+    RB3=1;
+    RCIF=0;
     RCIE=1;
+    RB3=0;
     while(1)
     {
-        RD0=~RD0;
-       __delay_ms(500);
+        if(Timer2_Counter==Timer2_Counter_Set)
+        {
+            Timer2_Counter=0;
+            RD0=~RD0;
+           // HMI_Send();  //HMI测试
+          //  HMI_New();   //HMI测试
+           // Get_Error(); //错误处理
+        }
+       // if(Timer2_Counter%5==0)
+        //{
+        //   UART_SEND_PC();
+        //}
+            
     }
-    return;
+    return;                                                                                                                                                                                                                                                                                   
 }
 
 void interrupt ISR()
 {
+    if(TMR1IF)  
+    {
+        RCIE=0;
+        TMR2IE=0;
+        TMR1H=0x06;
+        TMR1IF=0;
+        Read_ADS1110();
+        Read_MCP3424(ch);
+        if(ch==3)
+        {
+            ch=0;
+            Set_MCP3424(ch);
+        }
+        else
+        {
+            ch++;
+            Set_MCP3424(ch);
+        }     
+        Timer1_Counter++;
+        TMR2IE=1;
+        RCIE=1;
+        RB3=1;
+    }
+    
+    if(TMR2IF)   //10ms采样策略 ADS1110连续采样，每10ms采样一次；
+    {           //MCP3424单次采样，每10ms转换并采集一次
+        TMR2IF=0;
+       // RCIE=0;
+        Read_ADS1110();
+        Read_MCP3424(ch);
+        if(ch==3)
+        {
+            ch=0;
+            Set_MCP3424(ch);
+        }
+        else
+        {
+            ch++;
+            Set_MCP3424(ch);
+        }
+        Timer2_Counter++;
+        Get_soc();
+        Reg[2]=Reg[2]/4.095;
+        //UART_SEND_PC();     
+        //RCIE=1;
+    }
     if(RCIF)
     {
         RCIE=0;
-        UART_Read_Text2(buf,8);
+        UART_Read_Text(buf,8);
+        //CREN=0;
         //UART_Read_Text(buf2,8);
         RB3=0;
         UartAction(buf,8);
-        RD0=~RD0;
         RB3=1;
         RCIE=1;
+       // CREN=1;
     }
+    
 }
 
-void UartAction(unsigned char buf[], unsigned char len)
+void Get_Error(void)
+{   
+  //voltage error
+  if (Reg[1]>Reg[12])
+  {
+      Relay_Gy(0);
+      ErrorFlag1|=0b00001100;
+  }
+  else if(Reg[1]>Reg[11])
+      ErrorFlag1|=0b00000100;
+  else if(Reg[1]<Reg[21])
+  {
+      Relay_Gy(0);
+      ErrorFlag1|=0b00000011;
+  }
+  else if (Reg[1]<Reg[20])
+      ErrorFlag1|=0b00000001;
+  else
+      ErrorFlag1&=0b11110000;
+  //Temperature error
+  int tmp;
+  for(char i=0;i<3;i++)
+      for(char j=0;j<i;j++)
+      {
+          if(Temp[j]>Temp[j+1])
+          {
+              Temp[j] = tmp;
+              Temp[j] = Temp[j+1];
+              Temp[j+1] = tmp;
+          }
+              
+      }
+  if (Temp[3]>Reg[14])
+  {
+      Relay_Gy(0);
+      ErrorFlag1 |= 0b11000000;
+  }
+  else if (Temp[3]>Reg[13])
+      ErrorFlag1 |= 0b01000000;
+  if (Temp[3]>Reg[16])
+      Relay_Fan(1);
+  else if (Temp[3]<Reg[17])
+      Relay_Fan(0); 
+  //power on
+  if (ErrorFlag1 && 0b10101010)
+      Relay_Gy(0);
+  else
+      Relay_Gy(1);
+  //charge control
+  if (Reg[2]>204)//current > 5A
+    Relay(1);
+}
+void Set_Standard()
 {
-	unsigned char i;
-	unsigned char cnt;
-	unsigned char str[4];
-	unsigned int crc;
-	unsigned char crch, crcl;
-	if (buf[0] != 0x01) //Device number check.
-	{ 
-		return; 
-	}
-	crc = CRC16_2(&buf[0], len-2); //CRC check.
-	crch = crc >> 8;
-	crcl = crc & 0xFF;
-	if ((buf[len-2]!=crcl) || (buf[len-1]!=crch))
-	{
-		return; 
-	}
-	switch (buf[1])
-	{
-		case 0x03: //function number check
-			if ((buf[2]==0x00)&&(buf[3]<=0x20)) //Register Address check.
-			{
-				i = buf[3]; //Register start address
-				cnt = buf[5]; //Register number
-				buf[2] = cnt*2; //Data byte number.
-				len = 3; //Frame head byte length.
-                while (cnt--)
-                {
-                    buf[len++] = 0x00; //register high byte.
-                    buf[len++] = Reg[i++]; //register low byte.
-                }
-                break;
-            }		
-			else //Register Address error return.
-			{
-			    	buf[1] = 0x83; //high bit set to 1
-			    	buf[2] = 0x02; //set address error code 02
-			    	len = 3;
-			    	break;
-			}
-		case 0x06: //function number check
-			if ((buf[2]==0x00) && (buf[3]<=0x20)) //resister address check
-			{
-				i = buf[3]; //get Register Address
-				Reg[i] = buf[5]; //Save Resiger Value
-				len-=2;
-                break;
-			}
-			else //Register Address error.
-			{
-				buf[1] = 0x86; //set high bit to 1=
-                buf[2] = 0x02; //set register address error code 02
-				len = 3;
-				break;
-			}
-		default: //Other fuction code error.
-            buf[1] |= 0x80; //set high bit to 1
-			buf[2] = 0x01; //function error code 1
-			len = 3;
-			break;
-	}
-	crc = CRC16_2(&buf[0], len); //Get crc cdoe 
-	buf[len++] = crc; //set crc low byte
-	buf[len++] = crc >>8; //set crc high byte
-	UartWrite(buf, len+1); //send
+  Reg[11]=590;
+  Reg[12]=620;
+  Reg[13]=450;
+  Reg[14]=550;
+  Reg[15]=10000;
+  Reg[16]=370;
+  Reg[17]=350;
+  Reg[20]=480;
+  Reg[21]=400;
+}
+void Init_I2C()
+{
+  TRISC3=1;        
+  TRISC4=1;
+
+  SSPCON = 0x28;      
+  SSPCON2 = 0x00;
+  SSPADD = 0x0D;  
+
+  CKE=1;   
+  SMP=1;     
+
+  SSPIF=0;      
+  BCLIF=0;     
 }

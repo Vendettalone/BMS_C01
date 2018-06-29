@@ -1,0 +1,45 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+CRC16_1	uart.c	/^unsigned int CRC16_1(char *buf,char len)$/;"	f
+CRC16_2	uart.c	/^unsigned int CRC16_2(char* pchMsg, char wDataLen)$/;"	f
+I2C_Read	IIC.c	/^unsigned short I2C_Read(unsigned char ack)$/;"	f
+I2C_Start	IIC.c	/^void I2C_Start()$/;"	f
+I2C_Stop	IIC.c	/^void I2C_Stop()$/;"	f
+I2C_Write	IIC.c	/^unsigned char I2C_Write( unsigned char I2CWriteData )$/;"	f
+ISR	main.c	/^void interrupt ISR()$/;"	f
+Init_I2C	IIC.c	/^void Init_I2C()$/;"	f
+Init_IO	Init.c	/^void Init_IO(void)$/;"	f
+Init_timer1_100ms	Init.c	/^void Init_timer1_100ms(void)$/;"	f
+ReadEEPROM	Init.c	/^unsigned char ReadEEPROM(unsigned char address)$/;"	f
+Reg	main.c	/^int Reg[32];$/;"	v
+STATUS_H	Status.h	/^#define	STATUS_H$/;"	d
+Sample_Cur	AD.c	/^void  Sample_Cur(void)$/;"	f
+Sample_Temp	AD.c	/^void Sample_Temp(void)$/;"	f
+Sample_Volt	AD.c	/^void Sample_Volt(void)$/;"	f
+T_Chel	AD.c	/^unsigned char T_Chel[4]={0b10000000,0b10100000,0b11000000,0b11100000};$/;"	v
+UART_Init	uart.c	/^char UART_Init(const long int baudrate)$/;"	f
+UART_Read	uart.c	/^char UART_Read()$/;"	f
+UART_Read_Text	uart.c	/^void UART_Read_Text(char buf[],unsigned int len)$/;"	f
+UART_Write	uart.c	/^void UART_Write(char data)$/;"	f
+UART_Write_Text	uart.c	/^void UART_Write_Text(char *text)$/;"	f
+UartAction	uart.c	/^void UartAction(unsigned char buf[], unsigned char len)$/;"	f
+UartWrite	uart.c	/^void UartWrite(unsigned char buf[],unsigned char len)$/;"	f
+WriteEEPROM	Init.c	/^void WriteEEPROM(unsigned char address, unsigned char datas)$/;"	f
+_XTAL_FREQ	AD.h	/^#define	_XTAL_FREQ /;"	d
+_XTAL_FREQ	Init.h	/^#define	_XTAL_FREQ /;"	d
+_XTAL_FREQ	main.c	/^#define _XTAL_FREQ /;"	d	file:
+_XTAL_FREQ	test.c	/^#define _XTAL_FREQ /;"	d	file:
+_XTAL_FREQ	uart.h	/^#define	_XTAL_FREQ /;"	d
+buf	main.c	/^unsigned char buf[50];$/;"	v
+len	main.c	/^unsigned char len;$/;"	v
+main	main.c	/^ void main(void) {$/;"	f
+main	test.c	/^void main()$/;"	f
+read_ext_ads1110	AD.c	/^unsigned int read_ext_ads1110(unsigned char address)$/;"	f
+read_ext_m3424	AD.c	/^unsigned int read_ext_m3424()$/;"	f
+wCRCTalbeAbs	uart.h	/^const unsigned int wCRCTalbeAbs[] =$/;"	v
+write_ext_ads1110	AD.c	/^void write_ext_ads1110(unsigned char address, unsigned char config_data)$/;"	f
+write_ext_m3424	AD.c	/^void write_ext_m3424(unsigned char config_data)$/;"	f

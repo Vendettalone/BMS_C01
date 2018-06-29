@@ -1,4 +1,9 @@
-
+/*
+ * File:   main.c
+ * Author: vincewl
+ *
+ * Created on November 15, 2017, 3:38 PM
+ */
 #define _XTAL_FREQ 20000000
 // CONFIG
 #pragma config FOSC = HS        // Oscillator Selection bits (HS oscillator)
@@ -10,21 +15,89 @@
 #pragma config WRT = OFF        // Flash Program Memory Write Enable bits (Write protection off; all program memory may be written to by EECON control)
 #pragma config CP = OFF         // Flash Program Memory Code Protection bit (Code protection off)
 
+ /*
+  * 
 #include <xc.h>
-#include "uart1.h"
+#include <string.h>
+#include "Init.h"
+#include "uart.h"
+#include "IIC.h"
+#include "I2C.h"
+#include "AD.h"
+#include "control.h"
+//#include <pic16f877a.h>
 
-void main()
-{
-    TRISD=0xfe;
-    TRISB3=0;
-    RB3=0;
-    RD0=0;
-    UART_Init(9600);
+//unsigned char *buf;
+//this is a test
+unsigned char buf[50];
+ int Reg[32];
+int Temp[4]={0,0,0,0};
+unsigned char len;
+unsigned char KJ_Flag=0;
+unsigned char ErrorFlag1=0x00;
+unsigned char ErrorFlag2=0x00;
+unsigned char Timer2_Counter=0,Timer2_Counter_Set=100;
+unsigned char Timer1_Counter=0,Timer1_Counter_Set=10;
+void Get_Error(void);
+
+
+ void main(void) {
+     char string[]="hello world\n";
+     string[2]='x';
+    buf[1]='f';
+    buf[2]='u';
+    int i=1000,j=1000;
+    i =i/3.5;
+    j =j*10/35;
+    //Init_IO();
+    //I2CInit(100000);
     while(1)
     {
+        /*
+        I2CStart();
+        I2CSend(0b10010010);
+        I2CSend(0b10010000);
+        I2CStop();
+        __delay_ms(5);
+        I2CStart();
+        I2CSend(0b10010011);
+        buf[1] = I2CRead();
+        I2CAck();
+        buf[2]=I2CRead(); //1mv
+        I2CAck();
+        buf[3]=I2CRead();
+        I2CAck();
+        I2CStop();
+        Reg[1]=buf[1];
+        Reg[1]<<=8;
+        Reg[1]=Reg[1]+buf[2];
+        //Reg[1]=Reg[1]/29.8; //100mV
+        TRISD0=0;
         RD0=~RD0;
-        UART_Write(0x06);
-       __delay_ms(500);
+       // Sample_Volt();
+       // Sample_Cur();
+        __delay_ms(500);
+        //Sample_Temp();    
     }
     return;
+}
+/*****测试@0128************
+  * EEPROM初始设置正确性
+  * 使用MPLAB EEPROM编辑window设置值，在模拟器里进行读取和修改
+  * ************/
+#include <xc.h>
+#include "Init.h"
+#include "soc.h"
+int Reg[32];
+char soc;
+float Quantity1;
+const float  Quantity0=150696;
+void main(void)
+{
+  char soc1=0;
+   soc=50;
+   Quantity1=soc*Quantity0/100;
+   Reg[3]=1047;
+   Get_soc();
+   soc1=ReadEEPROM(0x0f);
 }
